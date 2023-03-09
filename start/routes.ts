@@ -20,10 +20,29 @@
 
 import Route from '@ioc:Adonis/Core/Route'
 
-Route.group(() =>{
-  Route.post("/registrar", "ClientesController.setRegistrarClientes")
-  Route.get("/listar", "ClientesController.getListarClientes")
-  Route.put("/actualizar/:id", "ClientesController.actualizarClientes")
-  Route.delete("/eliminar/:id", "ClientesController.eliminarClientes")
+Route.group(() => {
+  Route.post("register","AuthController.register");
+  Route.post("login","AuthController.login");
+  Route.group(() => {
+    Route.get("books", "BooksController.index");
+    Route.get("books/:id", "BooksController.show"); 
+    Route.post("books", "BooksController.store");
+    Route.get("perfil/listar/:id", "PerfilsController.listarUno");
+    Route.get("Perfil/listartodo", "PerfilsController.getListarPerfiles");
+    Route.get("user/listar/:id", "AuthController.listarUno");
+    Route.get("user/listartodo", "AuthController.listarTodo");
+    Route.group(() => { 
+      Route.delete("books/delete", "BooksController.deleteBook");
+      Route.delete("user/delete/:id", "AuthController.deleteUser");
+      Route.delete("perfil/delete/:id", "PerfilsController.deletePerfil");
+    }).middleware(["auth", "Administrador"])
+    Route.group(() => {
+      Route.post("perfil/register","PerfilsController.setRegistrarPerfiles");
+      Route.put("perfil/update/:id", "PerfilsController.updatePerfil");
+      Route.put("books/update/:id", "BooksController.update");
+      Route.put("user/update/:id", "AuthController.updateUsuario");
+     }).middleware(["auth", "Regular"])
+  }).middleware("auth");
+}).prefix("api");
 
-}).prefix("/api")
+
